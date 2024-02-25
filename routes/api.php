@@ -76,3 +76,6 @@ Route::prefix('order')->middleware('auth:sanctum')->group(function () {
     Route::get('get_all/', [OrderController::class, 'index']);
     Route::get('show_recipt/{order}', [OrderController::class, 'showReceipt']);
 });
+
+Route::get('order/add_items_to_order/{order}', [OrderController::class, 'add_items_to_order']);
+

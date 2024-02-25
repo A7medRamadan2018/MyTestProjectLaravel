@@ -9,32 +9,28 @@ use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
+use App\RepositoryInterface\IOrderRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
+    protected $orderRepository;
+
+    public function __construct(IOrderRepository $orderRepository)
+    {
+        $this->orderRepository = $orderRepository;
+    }
     public function index()
     {
         $user = Auth::guard('sanctum')->user();
-        $orders = $user->orders()->get();
-        return  OrderResource::collection($orders->load('orderProducts'));
+        $orders = $this->orderRepository->getAllForUser($user);
+        return OrderResource::collection($orders->load('orderProducts'));
     }
     public function store(StoreOrderRequest $request)
     {
         $valid_request = $request->validated();
-        $order = Order::create(['user_id' => auth()->guard('sanctum')->user()->id]);
-        foreach ($valid_request as $order_item) {
-            $product = Product::find($order_item['product_id']);
-            if (!$product || $product->quantity < $order_item['quantity']) {
-                return response()->json([
-                    'message' => 'Insufficient stock for product ID: ' . $order_item['product_id']
-                ], 400);
-            }
-            $product->decrement('quantity', $order_item['quantity']);
-            $order_item['order_id'] = $order->id;
-            OrderProduct::create($order_item);
-        }
+        $order = $this->orderRepository->create($valid_request, auth()->guard('sanctum')->user()->id);
         return response()->json([
             'message' => 'Order created successfully!',
             'order_id' => $order->id
@@ -47,12 +43,12 @@ class OrderController extends Controller
         foreach ($valid_request as $order_item) {
             $product = Product::find($order_item['product_id']);
             $order_product = OrderProduct::where('product_id', $product->id)->first();
+            $product->increment('quantity', $order_product->quantity);
             if (!$product || $product->quantity < $order_item['quantity']) {
                 return response()->json([
                     'message' => 'Insufficient stock for product ID: ' . $order_item['product_id']
                 ], 400);
             }
-            $product->increment('quantity', $order_product->quantity);
             $product->decrement('quantity', $order_item['quantity']);
             $order_product->update($order_item);
         }
@@ -93,5 +89,24 @@ class OrderController extends Controller
                 'time_created' => $order->created_at
             ]
         );
+    }
+
+    public function add_items_to_order(StoreOrderRequest $request, Order $order)
+    {
+        $valid_request = $request->validated();
+        foreach ($valid_request as $order_item) {
+            $product = Product::find($order_item['product_id']);
+            if (!$product || $product->quantity < $order_item['quantity']) {
+                return response()->json([
+                    'message' => 'Insufficient stock for product ID: ' . $order_item['product_id']
+                ], 400);
+            }
+            $product->decrement('quantity', $order_item['quantity']);
+            $order->orderProducts()->create($order_item);
+        }
+        return response()->json([
+            'message' => 'Order created successfully!',
+            'order_id' => $order->id
+        ], 201);
     }
 }

@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Models\Seller;
 use App\Observers\SellerObserver;
+use App\Repository\OrderRepository;
+use App\RepositoryInterface\IOrderRepository;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,6 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->bind(IOrderRepository::class, OrderRepository::class);
     }
 
     /**
