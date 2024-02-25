@@ -1,0 +1,45 @@
+<?php
+
+namespace App\Models;
+
+use App\Events\SellerRegisteredEvent;
+use App\Events\SellerRegisteringEvent;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Laravel\Sanctum\HasApiTokens;
+
+class Seller extends Model
+{
+    use HasFactory, HasApiTokens;
+    // protected $dispatchesEvents = [
+    //     // 'created' => SellerRegisteredEvent::class,
+    //     // 'creating' =>SellerRegisteringEvent::class
+    // ];
+
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'phone_number',
+        'birth_date',
+        'number_of_products'
+
+    ];
+
+    protected $casts =
+    [
+        'created_at' => 'timestamp',
+        'updated_at' => 'timestamp',
+        'password' => 'hashed',
+    ];
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    public function image()
+    {
+        return $this->morphOne(Image::class, 'imageable');
+    }
+}
