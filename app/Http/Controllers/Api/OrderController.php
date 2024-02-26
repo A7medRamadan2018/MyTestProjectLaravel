@@ -61,12 +61,12 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         $this->authorize('view', $order);
-        return new OrderResource($order);
+        return new OrderResource($this->orderRepository->show($order));
     }
     public function destroy(Order $order)
     {
         $this->authorize('delete', $order);
-        $order->delete();
+        $this->orderRepository->delete($order);
         return response()->json([
             'message' => 'Order deleted successfully!',
             'order_id' => $order->id

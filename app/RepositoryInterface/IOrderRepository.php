@@ -10,5 +10,5 @@ interface IOrderRepository
     public function show(Order $order);
     public function create(array $data, int $userId);
     public function update(Order $order, array $data);
-        public function delete(Order $order);
+    public function delete(Order $order);
 }
