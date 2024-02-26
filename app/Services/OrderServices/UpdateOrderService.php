@@ -3,13 +3,13 @@
 namespace App\Services\OrderServices;
 
 use App\Models\Order;
+use App\Models\OrderProduct;
 use App\Models\Product;
 
-class CreateOrderService
+class UpdateOrderService
 {
-    public function createOrder(int $userId, array $orderItems)
+    public function updateOrder(Order $order, array $orderItems)
     {
-        $order = Order::create(['user_id' => $userId]);
         $this->processItems($orderItems, $order);
         return $order;
     }
@@ -17,9 +17,11 @@ class CreateOrderService
     {
         foreach ($orderItems as $orderItem) {
             $product = $this->findProduct($orderItem['product_id']);
+            $order_product = OrderProduct::where('product_id', $product->id)->first();
+            $product->increment('quantity', $order_product->quantity);
             $this->checkProductQuantity($product,  $orderItem['quantity']);
             $this->updateProductQuantity($product, $orderItem['quantity']);
-            $this->assignOrderItemToOrder($order, $orderItem);
+            $this->updateOrderItem($order_product, $orderItem);
         }
     }
 
@@ -39,8 +41,8 @@ class CreateOrderService
         $product->decrement('quantity', $quantity);
     }
 
-    protected function assignOrderItemToOrder(Order $order, array $orderItem): void
+    protected function updateOrderItem(OrderProduct  $order_product, array $orderItems): void
     {
-        $order->orderProducts()->create($orderItem);
+        $order_product->update($orderItems);
     }
 }

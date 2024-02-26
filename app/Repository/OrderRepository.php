@@ -8,13 +8,17 @@ use App\Models\Order;
 use App\Models\Product;
 use App\RepositoryInterface\IOrderRepository;
 use App\Services\OrderServices\CreateOrderService;
+use App\Services\OrderServices\UpdateOrderService;
 
 class OrderRepository implements IOrderRepository
 {
     protected $createOrderService;
-    public function __construct(CreateOrderService $createOrderService)
+    protected $updateOrderService;
+
+    public function __construct(CreateOrderService $createOrderService, UpdateOrderService $updateOrderService)
     {
         $this->createOrderService = $createOrderService;
+        $this->updateOrderService = $updateOrderService;
     }
 
     public function getAllOrders()
@@ -28,7 +32,7 @@ class OrderRepository implements IOrderRepository
 
     public function show(Order $order)
     {
-        return $order;
+        return $order->load('orderProducts');
     }
 
     public function create(array $requestData, int $userId)
@@ -37,9 +41,10 @@ class OrderRepository implements IOrderRepository
         return $order;
     }
 
-    public function update(Order $order, array $data): void
+    public function update(Order $order, array $data)
     {
-        // TODO: Implement update() method.
+        $order = $this->updateOrderService->updateOrder($order, $data);
+        return $order;
     }
 
     public function delete(Order $order)

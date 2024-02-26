@@ -40,18 +40,7 @@ class OrderController extends Controller
     {
         $this->authorize('update', $order);
         $valid_request = $request->validated();
-        foreach ($valid_request as $order_item) {
-            $product = Product::find($order_item['product_id']);
-            $order_product = OrderProduct::where('product_id', $product->id)->first();
-            $product->increment('quantity', $order_product->quantity);
-            if (!$product || $product->quantity < $order_item['quantity']) {
-                return response()->json([
-                    'message' => 'Insufficient stock for product ID: ' . $order_item['product_id']
-                ], 400);
-            }
-            $product->decrement('quantity', $order_item['quantity']);
-            $order_product->update($order_item);
-        }
+        $order = $this->orderRepository->update($order, $valid_request);
         return response()->json([
             'message' => 'Order updated successfully!',
             'order_id' => $order->id
