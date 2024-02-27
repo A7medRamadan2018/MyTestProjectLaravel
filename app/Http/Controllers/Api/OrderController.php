@@ -10,11 +10,14 @@ use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
 use App\RepositoryInterface\IOrderRepository;
+use App\Traits\HttpResponseTrait;
 use Illuminate\Http\Request;
+use Illuminate\Http\ResponseTrait;
 use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
+    use HttpResponseTrait;
     protected $orderRepository;
 
     public function __construct(IOrderRepository $orderRepository)
@@ -25,16 +28,20 @@ class OrderController extends Controller
     {
         $user = Auth::guard('sanctum')->user();
         $orders = $this->orderRepository->getAllForUser($user);
-        return OrderResource::collection($orders->load('orderProducts'));
+        return $this->success(OrderResource::collection($orders->load('orderProducts')));
+    }
+    public function get_all_orders()
+    {
+        $orders = $this->orderRepository->getAllOrders();
+        return $this->success($message = count($orders),  $data=OrderResource::collection($orders->load('orderProducts')));
     }
     public function store(StoreOrderRequest $request)
     {
         $valid_request = $request->validated();
         $order = $this->orderRepository->create($valid_request, auth()->guard('sanctum')->user()->id);
-        return response()->json([
-            'message' => 'Order created successfully!',
-            'order_id' => $order->id
-        ], 201);
+        if (!$order)
+            return $this->failure('order cannot added !');
+        return $this->successResponse('order added successful', $order);
     }
     public function update(UpdateOrderRequest $request, Order $order)
     {

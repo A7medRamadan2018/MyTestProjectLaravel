@@ -46,7 +46,7 @@ class SellerAuthentication extends Controller
                 ],
                 404
             );
-            $seller->tokens()->delete();
+        $seller->tokens()->delete();
 
         return response()->json(
             [
@@ -72,5 +72,15 @@ class SellerAuthentication extends Controller
             );
         }
         return new SellerResource($seller->load('image'));
+    }
+
+    public function logout()
+    {
+        auth()->user()->tokens()->delete();
+        return  response()->json(
+            [
+                'message' => 'logout successful'
+            ]
+        );
     }
 }

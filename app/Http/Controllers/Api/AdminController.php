@@ -13,17 +13,15 @@ class AdminController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('check.super.admin');
     }
     public function index()
     {
+        $this->authorize('viewAny', Admin::class);
         return AdminResource::collection(Admin::all());
     }
     public function show(Admin $admin)
     {
-        $admin = auth()->guard('admin')->user();
-        if (!$admin->super_admin)
-            return response()->json(['message' => 'unauthorized']);
+        $this->authorize('view', $admin);
         return new AdminResource($admin);
     }
 
@@ -55,7 +53,6 @@ class AdminController extends Controller
     }
     public function delete(Admin $admin)
     {
-
         $admin->delete();
         return response()->json([
             'message' => 'deleted successfully',

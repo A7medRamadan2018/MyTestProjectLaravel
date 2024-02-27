@@ -20,7 +20,7 @@ class UpdateOrderService
             $order_product = OrderProduct::where('product_id', $product->id)->first();
             $product->increment('quantity', $order_product->quantity);
             $this->checkProductQuantity($product,  $orderItem['quantity']);
-            $this->updateProductQuantity($product, $orderItem['quantity']);
+            $this->decrementProductQuantity($product, $orderItem['quantity']);
             $this->updateOrderItem($order_product, $orderItem);
         }
     }
@@ -36,7 +36,7 @@ class UpdateOrderService
         return Product::find($productId);
     }
 
-    protected function updateProductQuantity(Product $product, int $quantity): void
+    protected function decrementProductQuantity(Product $product, int $quantity): void
     {
         $product->decrement('quantity', $quantity);
     }

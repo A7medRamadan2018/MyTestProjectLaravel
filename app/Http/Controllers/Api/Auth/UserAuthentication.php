@@ -8,6 +8,7 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
@@ -62,5 +63,14 @@ class UserAuthentication extends Controller
             ]);
             return new UserResource($user->load('image'));
         }
+    }
+    public function logout()
+    {
+        auth()->user()->tokens()->delete();
+        return  response()->json(
+            [
+                'message' => 'logout successful'
+            ]
+        );
     }
 }

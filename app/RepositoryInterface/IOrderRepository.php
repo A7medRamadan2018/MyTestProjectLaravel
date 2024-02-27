@@ -6,6 +6,7 @@ use App\Models\Order;
 
 interface IOrderRepository
 {
+    public function getAllOrders();
     public function getAllForUser($user);
     public function show(Order $order);
     public function create(array $data, int $userId);

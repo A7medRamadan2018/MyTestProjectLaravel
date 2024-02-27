@@ -61,4 +61,14 @@ class AdminAuthentication extends Controller
         }
         return new AdminResource($admin->load('image'));
     }
+
+    public function logout()
+    {
+        auth()->user()->tokens()->delete();
+        return  response()->json(
+            [
+                'message' => 'logout successful'
+            ]
+        );
+    }
 }

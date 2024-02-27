@@ -17,6 +17,7 @@ class CheckSuperAdminMidlleware
     {
         $admin = auth()->guard('admin')->user();
         if (!$admin || !$admin->super_admin) {
+
             return response()->json(['message' => 'You are Unauthorized'], 403);
         }
         return $next($request);
