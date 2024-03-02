@@ -25,7 +25,7 @@ class AdminPolicy
 
     public function update(Admin $auth_admin, Admin $target_admin)
     {
-        return $auth_admin->id === $target_admin->id || $auth_admin->super_admin;
+        return $auth_admin->id === $target_admin->id;
     }
     public function delete(Admin $auth_admin, Admin $target_admin)
     {

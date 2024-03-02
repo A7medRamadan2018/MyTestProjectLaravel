@@ -7,22 +7,20 @@ use App\Http\Requests\OrderRequest\StoreOrderRequest;
 use App\Http\Requests\OrderRequest\UpdateOrderRequest;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
-use App\Models\OrderProduct;
-use App\Models\Product;
 use App\RepositoryInterface\IOrderRepository;
+use App\Services\OrderServices\ShowReceiptForOrder;
+use App\Services\OrderServices\UpdateOrderService;
 use App\Traits\HttpResponseTrait;
-use Illuminate\Http\Request;
-use Illuminate\Http\ResponseTrait;
 use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
     use HttpResponseTrait;
-    protected $orderRepository;
-
-    public function __construct(IOrderRepository $orderRepository)
-    {
-        $this->orderRepository = $orderRepository;
+    public function __construct(
+        public IOrderRepository $orderRepository,
+        public ShowReceiptForOrder $showReceipt,
+        public UpdateOrderService $updateOrderService
+    ) {
     }
     public function index()
     {
@@ -33,7 +31,10 @@ class OrderController extends Controller
     public function get_all_orders()
     {
         $orders = $this->orderRepository->getAllOrders();
-        return $this->success($message = count($orders),  $data=OrderResource::collection($orders->load('orderProducts')));
+        return $this->success(
+            $message = count($orders),
+            $data = OrderResource::collection($orders->load('orderProducts'))
+        );
     }
     public function store(StoreOrderRequest $request)
     {
@@ -71,13 +72,9 @@ class OrderController extends Controller
 
     public function showReceipt(Order $order)
     {
-        // Calculate the total cost
-        $product_for_orders = $order->orderProducts()->get();
-        $total_cost = 0;
-        foreach ($product_for_orders as $product_order) {
-            $product = Product::find($product_order->product_id);
-            $total_cost +=  $product_order->quantity * $product->price;
-        }
+        // $showReceipt = new ShowReceiptForOrder($order);
+        $this->authorize('view', $order);
+        $total_cost = $this->showReceipt->calculateRecieptTotalCost($order);
         return response()->json(
             [
                 'order_id' => $order->id,
@@ -87,19 +84,11 @@ class OrderController extends Controller
         );
     }
 
-    public function add_items_to_order(StoreOrderRequest $request, Order $order)
+    public function addItemsToOrder(StoreOrderRequest $request, Order $order)
     {
+        $this->authorize('update', $order);
         $valid_request = $request->validated();
-        foreach ($valid_request as $order_item) {
-            $product = Product::find($order_item['product_id']);
-            if (!$product || $product->quantity < $order_item['quantity']) {
-                return response()->json([
-                    'message' => 'Insufficient stock for product ID: ' . $order_item['product_id']
-                ], 400);
-            }
-            $product->decrement('quantity', $order_item['quantity']);
-            $order->orderProducts()->create($order_item);
-        }
+        $order = $this->updateOrderService->addItemsToOrder($order, $valid_request);
         return response()->json([
             'message' => 'Order created successfully!',
             'order_id' => $order->id

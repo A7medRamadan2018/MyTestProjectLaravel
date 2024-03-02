@@ -49,7 +49,6 @@ class ProductController extends Controller
     public function update(UpdateProductRequest $request, Product $product)
     {
         $this->authorize('update', $product);
-
         $validProduct = $request->validated();
         $product->update($validProduct);
         $images = $request->file('images');
@@ -66,7 +65,6 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         $this->authorize('delete', $product);
-
         $product->delete();
         return response()->noContent();
     }

@@ -58,7 +58,7 @@ Route::prefix('order')->middleware('auth:sanctum')->group(function () {
     Route::get('show/{order}', [OrderController::class, 'show']);
     Route::delete('delete/{order}', [OrderController::class, 'destroy']);
     Route::get('get_orders/', [OrderController::class, 'index']);
-    Route::get('order/add_items_to_order/{order}', [OrderController::class, 'add_items_to_order']);
+    Route::get('add_items_to_order/{order}', [OrderController::class, 'addItemsToOrder']);
     Route::get('show_recipt/{order}', [OrderController::class, 'showReceipt']);
 });
 Route::middleware('check.super.admin')->group(function () {
