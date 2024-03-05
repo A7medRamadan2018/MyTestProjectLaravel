@@ -19,8 +19,6 @@ return new class extends Migration
             $table->string('password');
             $table->string('phone_number');
             $table->date('birth_date');
-            $table->integer('number_of_products')->default(0);
-            $table->string('image')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

@@ -1,13 +1,11 @@
 <?php
-
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminRequest\StoreAdminRequest;
 use App\Http\Requests\AdminRequest\UpdateAdminRequest;
 use App\Http\Resources\AdminResource;
 use App\Models\Admin;
-use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
@@ -51,8 +49,9 @@ class AdminController extends Controller
         $admin->update($valid);
         return new AdminResource($admin);
     }
-    public function delete(Admin $admin)
+    public function destroy(Admin $admin)
     {
+        $this->authorize('delete', $admin);
         $admin->delete();
         return response()->json([
             'message' => 'deleted successfully',

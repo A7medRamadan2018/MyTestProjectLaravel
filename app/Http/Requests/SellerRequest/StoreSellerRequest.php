@@ -27,8 +27,7 @@ class StoreSellerRequest extends FormRequest
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'phone_number' => ['required'],
             'birth_date' => ['required'],
-            'image' => ['image'],
-            'number_of_products' => ['integer', 'sometimes'],
+            'image' => ['required', 'image', 'mimes:jpeg,png,jpg,gif'] // Each image should be jpeg, png, jpg, or gif and maximum 2MB in size
         ];
     }
 }

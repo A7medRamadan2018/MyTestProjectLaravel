@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('job');
             $table->string('phone_number');
             $table->date('birth_date')->date_format('Y-m-d');
-            $table->string('image')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

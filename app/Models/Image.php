@@ -11,6 +11,11 @@ class Image extends Model
     protected $fillable = [
         'url',
     ];
+    protected $casts = [
+        'created_at' => 'timestamp',
+        'updated_at' => 'timestamp',
+    ];
+
     public function Product()
     {
         return $this->belongsTo(Product::class);

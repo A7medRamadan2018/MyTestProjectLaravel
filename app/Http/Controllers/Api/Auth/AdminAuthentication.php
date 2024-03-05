@@ -51,6 +51,7 @@ class AdminAuthentication extends Controller
     public function register(StoreAdminRequest $request)
     {
         $valid = $request->validated();
+        $valid['super_admin'] = $request->super_admin;
         $admin = Admin::create($valid);
         $image = $request->file('image');
         if ($image) {
@@ -65,7 +66,7 @@ class AdminAuthentication extends Controller
     public function logout()
     {
         auth()->user()->tokens()->delete();
-        return  response()->json(
+        return response()->json(
             [
                 'message' => 'logout successful'
             ]

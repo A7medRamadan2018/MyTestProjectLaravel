@@ -21,7 +21,6 @@ class SellerResource extends JsonResource
             'phone_number' => $this->phone_number,
             'birth_date' => $this->birth_date,
             'image' => $this->image,
-            'number_of_products' => $this->number_of_products,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

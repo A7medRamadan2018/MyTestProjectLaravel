@@ -21,7 +21,7 @@ class UserResource extends JsonResource
             'job' => $this->job,
             'phone_number' => $this->phone_number,
             'birth_date' => $this->birth_date,
-            'image' => $this->image,
+            'image' => $this->image
         ];
     }
     public function with(Request $request)

@@ -28,6 +28,7 @@ class UpdateAdminRequest extends FormRequest
             'job' => ['sometimes', 'string', 'max:255'],
             'phone_number' => ['sometimes'],
             'birth_date' => ['sometimes'],
+            'image' => ['sometimes', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'], // Each image should be jpeg, png, jpg, or gif and maximum 2MB in size
         ];
     }
 }

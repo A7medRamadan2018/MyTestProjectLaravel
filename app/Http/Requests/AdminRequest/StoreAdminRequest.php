@@ -36,6 +36,7 @@ class StoreAdminRequest extends FormRequest
             'job' => ['required', 'string', 'max:255'],
             'phone_number' => ['required'],
             'birth_date' => ['required'],
+            'image' => ['required', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'], // Each image should be jpeg, png, jpg, or gif and maximum 2MB in size
         ];
     }
 }

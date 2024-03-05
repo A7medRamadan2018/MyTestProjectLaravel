@@ -2,10 +2,7 @@
 
 namespace App\Repository;
 
-use App\Http\Requests\OrderRequest\StoreOrderRequest;
-use App\Http\Resources\OrderResource;
 use App\Models\Order;
-use App\Models\Product;
 use App\RepositoryInterface\IOrderRepository;
 use App\Services\OrderServices\CreateOrderService;
 use App\Services\OrderServices\UpdateOrderService;
@@ -32,7 +29,7 @@ class OrderRepository implements IOrderRepository
 
     public function show(Order $order)
     {
-        return $order->load('orderProducts');
+        return $order;
     }
 
     public function create(array $requestData, int $userId)

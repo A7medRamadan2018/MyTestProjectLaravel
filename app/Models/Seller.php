@@ -23,8 +23,6 @@ class Seller extends Model
         'password',
         'phone_number',
         'birth_date',
-        'number_of_products'
-
     ];
 
     protected $casts =

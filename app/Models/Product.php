@@ -11,7 +11,12 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
-        'description', 'price', 'quantity', 'is_available', 'category_id', 'seller_id'
+        'description',
+        'price',
+        'quantity',
+        'is_available',
+        'category_id',
+        'seller_id'
     ];
     protected $casts = [
         'is_available' => 'boolean',

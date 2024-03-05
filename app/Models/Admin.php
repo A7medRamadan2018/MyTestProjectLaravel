@@ -11,7 +11,8 @@ use Illuminate\Notifications\Notifiable;
 class Admin extends Model
 {
     use HasFactory, HasApiTokens, Notifiable;
-    protected $fillable = [
+    protected $fillable =
+    [
         'name',
         'email',
         'password',

@@ -72,7 +72,6 @@ class OrderController extends Controller
 
     public function showReceipt(Order $order)
     {
-        // $showReceipt = new ShowReceiptForOrder($order);
         $this->authorize('view', $order);
         $total_cost = $this->showReceipt->calculateRecieptTotalCost($order);
         return response()->json(
