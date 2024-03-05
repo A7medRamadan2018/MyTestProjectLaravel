@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SellerRequest\StoreSellerRequest;
 use App\Http\Requests\SellerRequest\UpdateSellerRequest;
 use App\Http\Resources\SellerResource;
+use App\Models\Admin;
 use App\Models\Seller;
 
 class SellerController extends Controller
@@ -15,7 +16,7 @@ class SellerController extends Controller
     }
     public function index()
     {
-        $this->authorize('viewAny', Seller::class);
+        $this->authorize('viewAny', Admin::class);
         return SellerResource::collection(Seller::all());
     }
     public function show(Seller $Seller)

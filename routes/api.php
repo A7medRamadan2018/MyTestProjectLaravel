@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Admin\AdminController;
 use App\Http\Controllers\Api\Auth\UserAuthentication;
 use App\Http\Controllers\Api\Auth\AdminAuthentication;
 use App\Http\Controllers\Api\Auth\SellerAuthentication;
+use App\Http\Controllers\Api\Seller\SellerController;
 
 ///////////////////////////// Admin Authentication //////////////////////////////
 Route::prefix('admin')->group(function () {
@@ -37,6 +38,13 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
     Route::put('update/{admin}', [AdminController::class, 'update']);
     Route::get('all', [AdminController::class, 'index']);
     Route::delete('delete/{admin}', [AdminController::class, 'destroy']);
+});
+Route::prefix('seller')->middleware('auth:seller')->group(function () {
+    Route::post('store', [SellerController::class, 'store']);
+    Route::get('show/{seller}', [SellerController::class, 'show']);
+    Route::put('update/{seller}', [SellerController::class, 'update']);
+    Route::get('all', [SellerController::class, 'index']);
+    Route::delete('delete/{seller}', [SellerController::class, 'destroy']);
 });
 Route::prefix('user')->middleware('auth:admin')->group(function () {
     Route::post('store', [UserController::class, 'store']);

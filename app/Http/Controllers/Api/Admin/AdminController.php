@@ -38,6 +38,7 @@ class AdminController extends Controller
     }
     public function update(UpdateAdminRequest $request, Admin $admin)
     {
+        $this->authorize('update', $admin);
         $valid = $request->validated();
         $image = $request->file('image');
         if ($image) {

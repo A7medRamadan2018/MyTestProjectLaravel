@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Api\User;
 
 use App\Models\User;
@@ -39,6 +40,7 @@ class UserController extends Controller
     }
     public function update(UpdateUserRequest $request, User $user)
     {
+        $this->authorize('update', $user);
         $valid = $request->validated();
         $image = $request->file('image');
         if ($image) {

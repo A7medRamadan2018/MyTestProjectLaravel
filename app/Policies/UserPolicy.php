@@ -16,20 +16,16 @@ class UserPolicy
         //
     }
 
-    public function viewAny(Admin $auth_admin)
-    {
-        return $auth_admin->super_admin;
+    public function viewAny(Admin $admin){
+        return $admin->super_admin;
     }
+
     public function view(User $auth_user, User $target_user)
     {
         return $auth_user->id === $target_user->id;
     }
 
     public function update(User $auth_user, User $target_user)
-    {
-        return $auth_user->id === $target_user->id;
-    }
-    public function delete(User $auth_user, User $target_user)
     {
         return $auth_user->id === $target_user->id;
     }
