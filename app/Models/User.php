@@ -12,13 +12,13 @@ class User extends Model
     use HasFactory, HasApiTokens;
 
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'email',
         'password',
         'job',
         'phone_number',
         'birth_date',
-        'image'
     ];
 
     protected $casts =
@@ -39,4 +39,10 @@ class User extends Model
     {
         return $this->hasMany(Order::class);
     }
+
+    public function getFullNameAttribute()
+    {
+        return "{$this->first_name} {$this->last_name}";
+    }
+
 }

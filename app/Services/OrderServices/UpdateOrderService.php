@@ -3,6 +3,7 @@
 namespace App\Services\OrderServices;
 
 use App\Models\Order;
+use App\Models\OrderItems;
 use App\Models\OrderProduct;
 use App\Services\OrderServices\OrderSeviceHelperFunctions;
 
@@ -20,7 +21,7 @@ class UpdateOrderService
     {
         foreach ($orderItems as $orderItem) {
             $product = $this->orderSeviceHelperFunctions->findProduct($orderItem['product_id']);
-            $order_product = OrderProduct::where('product_id', $product->id)->where('order_id', $order->id)->first();
+            $order_product = OrderItems::where('product_id', $product->id)->where('order_id', $order->id)->first();
             $product->increment('quantity', $order_product->quantity);
             $this->orderSeviceHelperFunctions->checkProductQuantity($product,  $orderItem['quantity']);
             $this->orderSeviceHelperFunctions->decrementProductQuantity($product, $orderItem['quantity']);

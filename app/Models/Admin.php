@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\HasApiTokens;
@@ -13,13 +14,15 @@ class Admin extends Model
     use HasFactory, HasApiTokens, Notifiable;
     protected $fillable =
     [
-        'name',
+        'first_name',
+        'last_name',
         'email',
         'password',
         'job',
         'phone_number',
         'birth_date',
-        'super_admin'
+        'super_admin',
+        'status'
     ];
 
     protected $casts =
@@ -33,13 +36,31 @@ class Admin extends Model
         'password',
         'remember_token',
     ];
+
+    // protected static function booted()
+    // {
+    //     static::addGlobalScope('admins', function (Builder $builder) {
+    //         $builder->where('super_admin', 0 );
+
+    //     });
+    // }
     public function image()
     {
         return $this->morphOne(Image::class, 'imageable');
     }
 
+    public function getSuperAdmin()
+    {
+        return $this->super_admin;
+    }
+
     public function categories(): HasMany
     {
         return $this->hasMany(Category::class);
+    }
+
+    public function getFullNameAttribute()
+    {
+        return "{$this->first_name} {$this->last_name}";
     }
 }

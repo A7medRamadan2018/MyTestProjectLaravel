@@ -3,6 +3,7 @@
 namespace App\Services\OrderServices;
 
 use App\Models\Order;
+use App\Models\OrderItems;
 use App\Models\OrderProduct;
 use App\Models\Product;
 
@@ -26,14 +27,14 @@ class  OrderSeviceHelperFunctions
 
     public function assignOrderItemToOrder(Order $order, array $orderItem): void
     {
-        $order->orderProducts()->create($orderItem);
+        $order->orderItems()->create($orderItem);
     }
     public function decrementProductQuantity(Product $product, int $quantity): void
     {
         $product->decrement('quantity', $quantity);
     }
 
-    public function updateOrderItem(OrderProduct  $order_product, array $orderItems): void
+    public function updateOrderItem(OrderItems  $order_product, array $orderItems): void
     {
         $order_product->update($orderItems);
     }

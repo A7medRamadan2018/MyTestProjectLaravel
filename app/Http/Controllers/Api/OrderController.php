@@ -24,22 +24,22 @@ class OrderController extends Controller
     }
     public function index()
     {
-        $user = Auth::guard('sanctum')->user();
+        $user = Auth::guard('user')->user();
         $orders = $this->orderRepository->getAllForUser($user);
-        return $this->success(OrderResource::collection($orders->load('orderProducts')));
+        return $this->success(OrderResource::collection($orders->load('orderItems')));
     }
-    public function get_all_orders()
+    public function allOrders()
     {
         $orders = $this->orderRepository->getAllOrders();
         return $this->success(
             $message = count($orders),
-            $data = OrderResource::collection($orders->load('orderProducts'))
+            $data = OrderResource::collection($orders->load('orderItems'))
         );
     }
     public function store(StoreOrderRequest $request)
     {
         $valid_request = $request->validated();
-        $order = $this->orderRepository->create($valid_request, auth()->guard('sanctum')->user()->id);
+        $order = $this->orderRepository->create($valid_request, auth()->guard('user')->user()->id);
         if (!$order)
             return $this->failure('order cannot added !');
         return $this->successResponse('order added successful', $order);

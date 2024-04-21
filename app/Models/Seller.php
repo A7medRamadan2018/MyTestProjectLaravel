@@ -18,7 +18,8 @@ class Seller extends Model
     // ];
 
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'email',
         'password',
         'phone_number',
@@ -39,5 +40,8 @@ class Seller extends Model
     public function image()
     {
         return $this->morphOne(Image::class, 'imageable');
+    }
+    public function getFullNameAttribute(){
+        return "{$this->first_name} {$this->last_name}";
     }
 }

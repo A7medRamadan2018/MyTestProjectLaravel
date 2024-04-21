@@ -14,7 +14,7 @@ class ShowReceiptForOrder
 
     public function calculateRecieptTotalCost(Order $order)
     {
-        $product_for_orders = $order->orderProducts()->get();
+        $product_for_orders = $order->orderItems()->get();
         $total_cost = 0;
         foreach ($product_for_orders as $product_order) {
             $product = Product::find($product_order->product_id);

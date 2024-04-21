@@ -21,44 +21,6 @@ use Illuminate\Support\Facades\Storage;
 class SellerAuthentication extends Controller
 {
 
-
-    public function login(Request $request)
-    {
-        $valid = $request->validate(
-            [
-                'email' => 'required',
-                'password' => 'required'
-            ]
-        );
-
-        $seller = Seller::where('email', $valid['email'])->first();
-        if (!$seller)
-            return response()->json(
-                [
-                    'message' => 'Invalid email address'
-                ],
-                404
-            );
-        if (!Hash::check($request->password, $seller->password))
-            return response()->json(
-                [
-                    'message' => 'wrong password'
-                ],
-                404
-            );
-        $seller->tokens()->delete();
-
-        return response()->json(
-            [
-                'message' => 'success Login',
-                'id' => $seller->id,
-                'email' => $seller->email,
-                'token' => $seller->createToken('seller_token')->plainTextToken
-            ],
-            201
-        );
-    }
-
     public function register(StoreSellerRequest $request)
     {
         $valid = $request->validated();
@@ -66,7 +28,10 @@ class SellerAuthentication extends Controller
 
         $image = $request->file('image');
         if ($image) {
-            $file = $image->store("SellerAccountsImage/seller{$seller->id}");
+            $file = $image->storeAs(
+                'seller_images',
+                'seller' . $seller->id . '_' . $image->getClientOriginalName(),
+            );
             $seller->image()->create(
                 ['url' => $file]
             );
@@ -74,13 +39,4 @@ class SellerAuthentication extends Controller
         return new SellerResource($seller->load('image'));
     }
 
-    public function logout()
-    {
-        auth()->user()->tokens()->delete();
-        return  response()->json(
-            [
-                'message' => 'logout successful'
-            ]
-        );
-    }
 }

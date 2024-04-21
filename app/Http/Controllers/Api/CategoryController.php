@@ -19,7 +19,7 @@ class CategoryController extends Controller
     {
         $admin = Auth::guard('admin')->user();
         $categories = Category::where('admin_id', $admin->id)->get();
-        return CategoryResource::collection($categories)->additional(['admin' => Auth::user('admin')]);;
+        return CategoryResource::collection($categories)->additional(['admin' => Auth::user('admin')]);
     }
     public function show(Category $category)
     {

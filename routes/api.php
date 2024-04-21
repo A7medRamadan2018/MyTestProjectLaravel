@@ -8,77 +8,83 @@ use App\Http\Controllers\Api\User\UserController;
 use App\Http\Controllers\Api\Admin\AdminController;
 use App\Http\Controllers\Api\Auth\UserAuthentication;
 use App\Http\Controllers\Api\Auth\AdminAuthentication;
+use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\SellerAuthentication;
 use App\Http\Controllers\Api\Seller\SellerController;
+use App\Http\Controllers\LogoutController;
 
 ///////////////////////////// Admin Authentication //////////////////////////////
-Route::prefix('admin')->group(function () {
-    Route::get('login', [AdminAuthentication::class, 'login']);
-    Route::post('register', [AdminAuthentication::class, 'register']);
-    Route::get('logout', [AdminAuthentication::class, 'logout'])->middleware('auth:admin');
+Route::prefix('admins')->group(function () {
+    Route::post('login', [LoginController::class, 'login']);
+    Route::post('register', [AdminAuthentication::class, 'register'])->middleware('check.super.admin');
+    Route::get('logout', [LogoutController::class, 'logout'])->middleware('auth:admin');
 });
 
 ///////////////////////////// User Authentication //////////////////////////////
-Route::prefix('user')->group(function () {
-    Route::get('login', [UserAuthentication::class, 'login']);
+Route::prefix('users')->group(function () {
+    Route::post('login', [LoginController::class, 'login']);
     Route::post('register', [UserAuthentication::class, 'register']);
-    Route::get('logout', [UserAuthentication::class, 'logout'])->middleware('auth:sanctum');
+    Route::get('logout', [LogoutController::class, 'logout'])->middleware('auth:user');
 });
 
 ///////////////////////////// Seller Authentication //////////////////////////////
-Route::prefix('seller')->group(function () {
-    Route::get('login', [SellerAuthentication::class, 'login']);
+Route::prefix('sellers')->group(function () {
+    Route::post('login', [LoginController::class, 'login']);
     Route::post('register', [SellerAuthentication::class, 'register']);
-    Route::get('logout', [SellerAuthentication::class, 'logout'])->middleware('auth:seller');
+    Route::get('logout', [LogoutController::class, 'logout'])->middleware('auth:seller');
 });
 
-Route::prefix('admin')->middleware('auth:admin')->group(function () {
-    Route::post('store', [AdminController::class, 'store']);
-    Route::get('show/{admin}', [AdminController::class, 'show']);
-    Route::put('update/{admin}', [AdminController::class, 'update']);
-    Route::get('all', [AdminController::class, 'index']);
-    Route::delete('delete/{admin}', [AdminController::class, 'destroy']);
+Route::post('admins', [AdminController::class, 'store']);
+Route::get('admins/{admin}', [AdminController::class, 'show'])->middleware('auth:admin');
+Route::put('admins/{admin}', [AdminController::class, 'update'])->middleware('auth:admin');
+Route::get('admins', [AdminController::class, 'index'])->middleware('check.super.admin');
+Route::delete('admins/{admin}', [AdminController::class, 'destroy'])->middleware('check.super.admin');
+
+////////////////// Seller CRUD routes ////////////////////
+Route::post('sellers', [SellerController::class, 'store']);
+Route::middleware('auth:seller')->group(function () {
+    Route::get('sellers/{seller}', [SellerController::class, 'show']);
+    Route::put('sellers/{seller}', [SellerController::class, 'update']);
+    Route::get('sellers', [SellerController::class, 'index']);
 });
-Route::prefix('seller')->middleware('auth:seller')->group(function () {
-    Route::post('store', [SellerController::class, 'store']);
-    Route::get('show/{seller}', [SellerController::class, 'show']);
-    Route::put('update/{seller}', [SellerController::class, 'update']);
-    Route::get('all', [SellerController::class, 'index']);
-    Route::delete('delete/{seller}', [SellerController::class, 'destroy']);
+Route::delete('sellers/{seller}', [SellerController::class, 'destroy'])->middleware('check.super.admin');
+
+////////////////// User CRUD routes ////////////////////
+Route::middleware('auth:admin')->group(function () {
+    Route::get('users', [UserController::class, 'index']);
+    Route::delete('users/{user}', [UserController::class, 'destroy']);
 });
-Route::prefix('user')->middleware('auth:admin')->group(function () {
-    Route::post('store', [UserController::class, 'store']);
-    Route::get('all', [UserController::class, 'index']);
-    Route::delete('delete/{user}', [UserController::class, 'destroy']);
+Route::post('users', [UserController::class, 'store']);
+Route::middleware('auth:user')->group(function () {
+    Route::get('users/{user}', [UserController::class, 'show']);
+    Route::put('users/{user}', [UserController::class, 'update']);
 });
-Route::prefix('user')->middleware('auth:sanctum')->group(function () {
-    Route::get('show/{user}', [UserController::class, 'show']);
-    Route::put('update/{user}', [UserController::class, 'update']);
-});
-Route::prefix('product')->middleware('auth:seller')->group(function () {
-    Route::post('store', [ProductController::class, 'store']);
-    Route::get('show/{product}', [ProductController::class, 'show']);
-    Route::put('update/{product}', [ProductController::class, 'update']);
-    Route::get('all', [ProductController::class, 'index']);
-    Route::delete('delete/{product}', [ProductController::class, 'destroy']);
-});
-Route::prefix('category')->middleware('auth:admin')->group(function () {
-    Route::post('store', [CategoryController::class, 'store']);
-    Route::get('show/{category}', [CategoryController::class, 'show']);
-    Route::put('update/{category}', [CategoryController::class, 'update']);
-    Route::get('all', [CategoryController::class, 'index']);
-    Route::delete('delete/{category}', [CategoryController::class, 'destroy']);
+////////////////// Products CRUD routes ////////////////////
+Route::post('products', [ProductController::class, 'store'])->middleware('auth:seller');
+Route::get('products/{product}', [ProductController::class, 'show']); // any user even if guest
+Route::put('products/{product}', [ProductController::class, 'update'])->middleware('auth:seller');
+Route::get('products', [ProductController::class, 'index'])->middleware('auth:seller');
+Route::delete('products/{product}', [ProductController::class, 'destroy'])->middleware('auth:seller');
+
+////////////////// Categories CRUD routes ////////////////////
+Route::middleware('auth:admin')->group(function () {
+    Route::post('categories', [CategoryController::class, 'store']);
+    Route::get('categories/{category}', [CategoryController::class, 'show']);
+    Route::put('categories/{category}', [CategoryController::class, 'update']);
+    Route::get('categories', [CategoryController::class, 'index']);
+    Route::delete('categories/{category}', [CategoryController::class, 'destroy']);
 });
 
-Route::prefix('order')->middleware('auth:sanctum')->group(function () {
-    Route::post('store/', [OrderController::class, 'store']);
-    Route::put('update/{order}', [OrderController::class, 'update']);
-    Route::get('show/{order}', [OrderController::class, 'show']);
-    Route::delete('delete/{order}', [OrderController::class, 'destroy']);
-    Route::get('get_orders/', [OrderController::class, 'index']);
-    Route::get('add_items_to_order/{order}', [OrderController::class, 'addItemsToOrder']);
-    Route::get('show_recipt/{order}', [OrderController::class, 'showReceipt']);
+////////////////// Orders CRUD routes ////////////////////
+Route::middleware('auth:user')->group(function () {
+    Route::post('orders', [OrderController::class, 'store']);
+    Route::put('orders/{order}', [OrderController::class, 'update']);
+    Route::get('orders/{order}', [OrderController::class, 'show']);
+    Route::delete('orders/{order}', [OrderController::class, 'destroy']);
+    Route::get('orders', [OrderController::class, 'index']);
+    Route::post('orders/{order}/items', [OrderController::class, 'addItemsToOrder']);
+    Route::get('orders/{order}/receipt', [OrderController::class, 'showReceipt']);
 });
 Route::middleware('check.super.admin')->group(function () {
-    Route::get('order/admin/get_orders/', [OrderController::class, 'all_orders']);
+    Route::get('admin/orders', [OrderController::class, 'allOrders']);
 });

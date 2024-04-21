@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('admins', function (Blueprint $table) {
-            $table->integer('super_admin')->default(0);
+        Schema::create('product_tag', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('product_id')->nullable()->constrained('products')->nullOnDelete();
+            $table->foreignId('tag_id')->nullable()->constrained('tags')->nullOnDelete();
+            $table->timestamps();
         });
     }
 
@@ -21,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('admins', function (Blueprint $table) {
-            $table->dropColumn('super_admin');
-        });
+        Schema::dropIfExists('product_tag');
     }
 };

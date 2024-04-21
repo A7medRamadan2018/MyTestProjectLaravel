@@ -6,13 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest\StoreProductRequest;
 use App\Http\Requests\ProductRequest\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
-use App\Models\Image;
 use App\Models\Product;
-use App\Models\Seller;
-use App\Services\ProductService;
-use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
+
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -35,7 +33,7 @@ class ProductController extends Controller
         $validProduct = $request->validated();
         $validProduct['seller_id'] = Auth::guard('seller')->user()->id;
         $product = Product::create($validProduct);
-        $images = $request->file('images');
+        $images = $request['images'];
         foreach ($images as $image) {
             $path = $image->store("/products/product_{$product->id}");
             $product->images()->create([
@@ -65,7 +63,11 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         $this->authorize('delete', $product);
-        $product->delete();
+        // $product->delete();
+        $folderPath = public_path("products\product_{$product->id}");
+        if (Storage::exists($folderPath)) {
+            Storage::deleteDirectory($folderPath);
+        }
         return response()->noContent();
     }
 }

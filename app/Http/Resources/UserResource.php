@@ -2,8 +2,10 @@
 
 namespace App\Http\Resources;
 
+use Illuminate\Contracts\Cache\Store;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class UserResource extends JsonResource
 {
@@ -16,12 +18,12 @@ class UserResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'Full_Name' => $this->full_name,
             'email' => $this->email,
             'job' => $this->job,
             'phone_number' => $this->phone_number,
             'birth_date' => $this->birth_date,
-            'image' => $this->image
+            'image' => Storage::disk('public')->url($this->image->url)
         ];
     }
     public function with(Request $request)
